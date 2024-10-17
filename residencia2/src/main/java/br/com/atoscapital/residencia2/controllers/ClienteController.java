@@ -18,43 +18,47 @@ import br.com.atoscapital.residencia2.model.entities.Cliente;
 import br.com.atoscapital.residencia2.model.repositories.ClienteRepository;
 
 @RestController
-@RequestMapping("/api/clientes")
+@RequestMapping("/api/cliente")
 public class ClienteController {
-	
+
 	@Autowired
 	private ClienteRepository clienteRepository;
-	
-	@PostMapping //Insere
+
+	@PostMapping
 	public @ResponseBody Cliente salvarCliente(@Valid Cliente cliente) {
 		clienteRepository.save(cliente);
 		return cliente;
 	}
-	
-	@GetMapping //Obtem todos
-	public Iterable<Cliente> obterClientes() {
-		return clienteRepository.findAll();
-	}
-	
-	@GetMapping(path = "/nome/{parteNome}") //Obtem A PARTIR DE UM NOME e é ignorecase
-	public Iterable<Cliente> obterClientesPorNome(@PathVariable String parteNome) {
-		return clienteRepository.findByNomeContainingIgnoreCase(parteNome);
-	}
-	
-	
-	@GetMapping(path = "/{id}") //Obtem por ID
-	public Optional<Cliente> obterClientePorId(@PathVariable Long id) {
-		return clienteRepository.findById(id);
-	}
-	
-	@PutMapping //altera parcialmente ou tdos os atributos
+
+	@PutMapping
 	public Cliente alterarCliente(@Valid Cliente cliente) {
 		clienteRepository.save(cliente);
 		return cliente;
 	}
-	
-	@DeleteMapping(path = "/{id}") // deleta o cliente
-	public void excluirCliente(@PathVariable Long id) {
+
+	@GetMapping
+	public Iterable<Cliente> obterClientes() {
+		return clienteRepository.findAll();
+	}
+
+	@GetMapping(path = "/{id}")
+	public Optional<Cliente> obterClientePorId(@PathVariable Long id) {
+		return clienteRepository.findById(id);
+	}
+
+	@GetMapping(path = "/nome/{parteNome}")
+	public Iterable<Cliente> obterClientesPorNome(@PathVariable String parteNome) {
+		return clienteRepository.findByNomeContainingIgnoreCase(parteNome);
+	}
+
+	@GetMapping(path = "/cpf/{cpf}")
+	public Iterable<Cliente> obterClientePorCpf(@PathVariable String cpf) {
+		return clienteRepository.findByCpf(cpf);
+	}
+
+	@DeleteMapping(path = "/fisica/{id}")
+	public void deletarClienteFisico(@PathVariable Long id) {
 		clienteRepository.deleteById(id);
 	}
-	
+
 }
