@@ -1,6 +1,11 @@
 package br.com.atoscapital.residencia2.model.entities;
 
+import java.time.LocalDate;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,28 +30,54 @@ public class Fatura {
     @Min(value = (long) 0.01f, message = "O valor da fatura deve ser positivo (mínimo 0.01)")
 	private Float valor;
 
-	@NotBlank(message = "dataEmissao não pode ser nulo")
-	private String dataEmissao;
+	@Column(name = "data_emissao", nullable = false)
+	private LocalDate dataEmissao;
 
-	@NotBlank(message = "dataVencimento não pode ser nulo")
-	private String dataVencimento;
+	@Column(name = "data_vencimento", nullable = false)
+	private LocalDate dataVencimento;
 
 	private boolean faturaAtiva = true;
-
+	
 	@ManyToOne
 	@JoinColumn(name = "cliente_id", nullable = false)
 	private Cliente cliente;
+	 
+	private Float valorTotalPagamentos = 0f;
+	
+    @Enumerated(EnumType.STRING)
+    private StatusFatura status = StatusFatura.PENDENTE;
 
+    public void adicionarPagamento(Float valorPagamento) {
+    	if (valorTotalPagamentos == null) {
+            valorTotalPagamentos = 0f;
+        }
+    	
+    	if (valorTotalPagamentos + valorPagamento > valor) {
+            valorTotalPagamentos = valor;
+        } else {
+            this.valorTotalPagamentos += valorPagamento;
+        }
+        
+        atualizarStatus();
+    }
+
+    private void atualizarStatus() {
+        this.status = valorTotalPagamentos >= valor ? StatusFatura.PAGO : StatusFatura.PENDENTE;
+    }
+	
 	public Fatura() {
-
+		this.dataEmissao = LocalDate.now();
+		this.dataVencimento = this.dataEmissao.plusDays(15);
 	}
 
-	public Fatura(String descricao, Float valor, String dataEmissao, String dataVencimento, Cliente cliente) {
+	public Fatura(String descricao, Float valor, Cliente cliente) {
 		this.descricao = descricao;
 		this.valor = valor;
-		this.dataEmissao = dataEmissao;
-		this.dataVencimento = dataVencimento;
+		this.dataEmissao = LocalDate.now();
+		this.dataVencimento = this.dataEmissao.plusDays(15);
 		this.cliente = cliente;
+		this.valorTotalPagamentos = 0f;
+	    this.status = StatusFatura.PENDENTE; 
 	}
 
 	public Long getId() {
@@ -73,19 +104,19 @@ public class Fatura {
 		this.valor = valor;
 	}
 
-	public String getDataEmissao() {
+	public LocalDate getDataEmissao() {
 		return dataEmissao;
 	}
 
-	public void setDataEmissao(String dataEmissao) {
+	public void setDataEmissao(LocalDate dataEmissao) {
 		this.dataEmissao = dataEmissao;
 	}
 
-	public String getdataVencimento() {
+	public LocalDate getDataVencimento() {
 		return dataVencimento;
 	}
 
-	public void setdataVencimento(String dataVencimento) {
+	public void setDataVencimento(LocalDate dataVencimento) {
 		this.dataVencimento = dataVencimento;
 	}
 
@@ -105,4 +136,21 @@ public class Fatura {
 		this.faturaAtiva = faturaAtiva;
 	}
 
+	public Float getValorTotalPagamentos() {
+		return valorTotalPagamentos;
+	}
+
+	public void setValorTotalPagamentos(Float valorTotalPagamentos) {
+		this.valorTotalPagamentos = valorTotalPagamentos;
+	}
+
+	public StatusFatura getStatus() {
+		return status;
+	}
+
+	public void setStatus(StatusFatura status) {
+		this.status = status;
+	}
+	
+	
 }

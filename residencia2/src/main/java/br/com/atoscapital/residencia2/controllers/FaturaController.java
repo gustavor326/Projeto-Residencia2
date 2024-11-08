@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.atoscapital.residencia2.model.entities.Cliente;
 import br.com.atoscapital.residencia2.model.entities.Fatura;
+import br.com.atoscapital.residencia2.model.entities.Pagamento;
 import br.com.atoscapital.residencia2.model.repositories.FaturaRepository;
 import br.com.atoscapital.residencia2.services.FaturaService;
 
@@ -27,19 +28,19 @@ public class FaturaController {
 	private FaturaService faturaService;
 
 	@PostMapping
-	public Fatura salvarFatura(Fatura fatura) {
+	public Fatura salvarFatura( Fatura fatura) {
 		return faturaRepository.save(fatura);
 	}
 
 	@PutMapping("/{id}")
-	public Fatura atualizarFatura(@PathVariable Long id, @RequestBody Fatura fatura) {
+	public Fatura atualizarFatura(@PathVariable Long id, Fatura fatura) {
 		return faturaService.atualizarFatura(id, fatura);
 	}
-
+	
 	@GetMapping
-	public List<Fatura> buscarFaturas() {
-		return (List<Fatura>) faturaRepository.findAll();
-	}
+    public List<Fatura> buscarFaturas() {
+        return (List<Fatura>) faturaRepository.findAll();
+    }
 
 	@GetMapping("/{id}")
 	public Optional<Fatura> buscarFaturaPorId(@PathVariable Long id) {
@@ -62,7 +63,7 @@ public class FaturaController {
 	}
 
 	@DeleteMapping("/fisica/{id}")
-	public void deletarFatura(@PathVariable Long id) {
+	public void deletarFaturaFisica(@PathVariable Long id) {
 		faturaService.excluirFaturaFisica(id);
 	}
 }
